@@ -1,0 +1,20 @@
+{
+    "posts": [
+        {
+            "username": "Dave", 
+            "text":"Man this thread was really well done!"
+        },
+        {
+            "username": "John",
+            "text":"Agreed with David, whoever made this must be a genious!"
+        },
+        {
+            "username": "Tina",
+            "text":"I bet who ever did it is really handsome..."
+        },
+        {
+            "username": "Brady", 
+            "text":"I'll just go ahead and give him full credit for this well done assignment."
+        }
+    ]
+}
