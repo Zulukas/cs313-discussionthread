@@ -8,9 +8,6 @@ package DiscussionThread;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Scanner;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -49,25 +46,30 @@ public class GetPosts extends HttpServlet {
             //http://stackoverflow.com/questions/4340653/file-path-to-resource-in-our-war-web-inf-folder
             ServletContext context = this.getServletContext();
             
-            String fullPath = context.getRealPath(path);
+            //Get the correct context for the json path.
+            String fullPath = context.getRealPath(path);            
             
-//            out.println(fullPath + "<br>");
-            
+            //File-ize it!
             File jsonFile = new File(fullPath);
+            //Dump it into a string
             String jsonFileContents = new Scanner(jsonFile).useDelimiter("\\Z").next();       
 
+            //Make a JSONObject from our string to be parsed.  I realize I'm going from json to string to json... but it works and I struggled with this for a long stinkin' time.
             JSONObject mainObject = new JSONObject(jsonFileContents);
             JSONArray jPosts = mainObject.getJSONArray("posts");
             
             int count = 1;
             
+            //I didn't feel like properly passing all this stuff to a jsp, so I just did it here :-)
             out.print("<!DOCTYPE html><html><head><title>View Posts</title></head><body><h1>View all the posts!</h1>");
             out.print("<table border=\"1\"><tr><td>#</td><td>User:</td><td>Message</td></tr>");
 
+            //Iterate through the JSON object...
             for (Object key : jPosts) {
                 
                 JSONArray jKey = (JSONArray)key;
                 
+                //Iterate through the sub array...
                 for (Object subKey : jKey) {                    
                     JSONObject entry = (JSONObject)subKey;
                     out.print("<tr><td>" + count++ + "</td><td>" + entry.get("username").toString() + "</td><td>" + entry.get("text").toString() + "</td></tr>");                    
@@ -75,7 +77,7 @@ public class GetPosts extends HttpServlet {
                 }     
             }
             
-            out.print("</table></body></html>");
+            out.print("<p><a href=\"newpost.jsp\">Make a new post!</a></p></table></body></html>");
         }
         catch (Exception ex)
         {

@@ -51,31 +51,32 @@ public class SubmitPost extends HttpServlet {
             //http://stackoverflow.com/questions/4340653/file-path-to-resource-in-our-war-web-inf-folder
             ServletContext context = this.getServletContext();
             
-            String fullPath = context.getRealPath(path);
-            
-            out.println(fullPath + "<br>");
-            
+            //Get the JSON context
+            String fullPath = context.getRealPath(path);                                   
             File jsonFile = new File(fullPath);
             
+            //Get the contents of the JSON
             String jsonFileContents = new Scanner(jsonFile).useDelimiter("\\Z").next();
          
+            //Dump the contents into a JSON object
             JSONObject mainObject = new JSONObject(jsonFileContents);
             JSONObject valuesObject = new JSONObject();
           
+            //This will help us add stuff to our json 
             JSONArray list = new JSONArray();
             
             valuesObject.put("username", user);
             valuesObject.put("text", text);
             
             list.put(valuesObject);
-            mainObject.accumulate("posts", list);
+            mainObject.accumulate("posts", list);  //Put it in!            
             
-            out.println(mainObject.toString());
-            
+            //Rewrite our json file.
             FileWriter fw = new FileWriter(jsonFile, false);
             fw.write(mainObject.toString());
             fw.close();
             
+            //Onward!
             request.getSession().setAttribute("jsonobject", mainObject);
             request.getRequestDispatcher("GetPosts").forward(request, response);
         }
