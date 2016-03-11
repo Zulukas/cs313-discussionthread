@@ -21,6 +21,9 @@
             <input type="hidden" name="username" value="${username}">
         </form>
         
-        <h4><a href="view.jsp">Skip straight to posts</a></h4>
+        <form method="POST" action="GetPosts">
+            <input type="submit" value="View Posts">
+        </form>
+<!--        <h4><a href="view.jsp">Skip straight to posts</a></h4>-->
     </body>
 </html>

@@ -6,9 +6,11 @@
 package DiscussionThread;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Scanner;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -19,13 +21,12 @@ import javax.servlet.http.HttpServletResponse;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-
 /**
  *
  * @author kevin
  */
-@WebServlet(name = "SubmitPost", urlPatterns = {"/SubmitPost"})
-public class SubmitPost extends HttpServlet {
+@WebServlet(name = "GetPosts", urlPatterns = {"/GetPosts"})
+public class GetPosts extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -38,13 +39,10 @@ public class SubmitPost extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");                
+        response.setContentType("text/html;charset=UTF-8");
         PrintWriter out = response.getWriter();
-
+          
         String path = "/WEB-INF/posts.json";
-        
-        String text = request.getParameter("text");
-        String user = request.getParameter("username");
         
         try
         {
@@ -53,35 +51,36 @@ public class SubmitPost extends HttpServlet {
             
             String fullPath = context.getRealPath(path);
             
-            out.println(fullPath + "<br>");
+//            out.println(fullPath + "<br>");
             
             File jsonFile = new File(fullPath);
-            
-            String jsonFileContents = new Scanner(jsonFile).useDelimiter("\\Z").next();
-         
+            String jsonFileContents = new Scanner(jsonFile).useDelimiter("\\Z").next();       
+
             JSONObject mainObject = new JSONObject(jsonFileContents);
-            JSONObject valuesObject = new JSONObject();
-          
-            JSONArray list = new JSONArray();
+            JSONArray jPosts = mainObject.getJSONArray("posts");
             
-            valuesObject.put("username", user);
-            valuesObject.put("text", text);
+            int count = 1;
             
-            list.put(valuesObject);
-            mainObject.accumulate("posts", list);
+            out.print("<!DOCTYPE html><html><head><title>View Posts</title></head><body><h1>View all the posts!</h1>");
+            out.print("<table border=\"1\"><tr><td>#</td><td>User:</td><td>Message</td></tr>");
+
+            for (Object key : jPosts) {
+                
+                JSONArray jKey = (JSONArray)key;
+                
+                for (Object subKey : jKey) {                    
+                    JSONObject entry = (JSONObject)subKey;
+                    out.print("<tr><td>" + count++ + "</td><td>" + entry.get("username").toString() + "</td><td>" + entry.get("text").toString() + "</td></tr>");                    
+                    System.out.print(entry.get("username") + ": " + entry.get("text"));
+                }     
+            }
             
-            out.println(mainObject.toString());
-            
-            FileWriter fw = new FileWriter(jsonFile, false);
-            fw.write(mainObject.toString());
-            fw.close();
-            
-            request.getSession().setAttribute("jsonobject", mainObject);
-            request.getRequestDispatcher("GetPosts").forward(request, response);
+            out.print("</table></body></html>");
         }
         catch (Exception ex)
         {
-            out.println("Boo hoo");
+            out.println("Ruh roh");
+            ex.printStackTrace();
         }
     }
 
